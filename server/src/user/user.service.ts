@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundError } from 'src/util/not-found.error';
 import { Repository } from 'typeorm';
@@ -21,8 +21,14 @@ export class UserService {
     return user;
   }
 
-  async create(user: User): Promise<User> {
-    return this.userRepository.save(user);
+  async create(user: Partial<User>): Promise<User> {
+    try {
+      const createdUser = await this.userRepository.save(user);
+      return createdUser;
+    } catch (e) {
+      if (e.code === '23505')
+        throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+    }
   }
 
   async update(id: string, changes: Partial<User>): Promise<User> {

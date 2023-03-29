@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 
 export enum Gender {
@@ -12,6 +13,7 @@ export enum Gender {
 }
 
 @Entity('users')
+@Index('unique_user', ['name', 'firstName', 'phone'], { unique: true })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
